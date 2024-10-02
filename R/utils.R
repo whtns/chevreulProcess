@@ -201,8 +201,12 @@ update_project_db <- function(
     projects_tbl <-
         dir_ls(projects_dir, glob = "*.here", recurse = TRUE, 
                fail = FALSE, all = TRUE) %>%
-        path_dir(.) %>%
-        set_names(path_file(.)) %>%
+        path_dir(.)
+    
+    names(projects_tbl) <- path_file(projects_tbl)
+    
+    projects_tbl <- 
+        projects_tbl %>%
         enframe("project_name", "project_path") %>%
         mutate(project_slug = str_remove(project_name, "_proj$")) %>%
         mutate(project_type = path_file(path_dir(project_path))) %>%
@@ -242,8 +246,12 @@ append_to_project_db <- function(
     con <- dbConnect(SQLite(), path(cache_location, sqlite_db))
 
     projects_tbl <-
-        new_project_path %>%
-        set_names(path_file(.)) %>%
+        new_project_path
+    
+    names(projects_tbl) <- path_file(projects_tbl)
+    
+    projects_tbl <- 
+        projects_tbl |> 
         enframe("project_name", "project_path") %>%
         mutate(project_slug = str_remove(project_name, "_proj$")) %>%
         mutate(project_type = path_file(path_dir(project_path))) %>%
@@ -302,8 +310,12 @@ read_project_db <- function(
 make_bigwig_db <- function(new_project = NULL, 
                            cache_location = "~/.cache/chevreul/", 
                            sqlite_db = "bw-files.db") {
-    new_bigwigfiles <- dir_ls(new_project, glob = "*.bw", recurse = TRUE) %>%
-        set_names(path_file(.)) %>%
+    new_bigwigfiles <- dir_ls(new_project, glob = "*.bw", recurse = TRUE)
+    
+    names(new_bigwigfiles) <- path_file(new_bigwigfiles)
+    
+    new_bigwigfiles <- 
+        new_bigwigfiles |> 
         enframe("name", "bigWig") %>%
         mutate(sample_id = 
                    str_remove(name, "_Aligned.sortedByCoord.out.*bw$")) %>%
@@ -362,10 +374,10 @@ metadata_from_batch <- function(
 #' make_chevreul_clean_names(colnames(
 #' get_cell_metadata(small_example_dataset)))
 make_chevreul_clean_names <- function(myvec) {
-    myvec %>%
-        set_names(str_to_title(str_replace_all(., 
-                                               "[^[:alnum:][:space:]\\.]",
-                                               " ")))
+    names(myvec) <- 
+        myvec |> 
+        str_replace_all("[^[:alnum:][:space:]\\.]", " ") |> 
+        str_to_title()
 }
 
 #' Get metadata from object

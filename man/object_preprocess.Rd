@@ -32,3 +32,7 @@ a preprocessed SingleCellExperiment object
 \description{
 Performs standard pre-processing workflow for scRNA-seq data
 }
+\examples{
+object_preprocess(small_example_dataset)
+
+}

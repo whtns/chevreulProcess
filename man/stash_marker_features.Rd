@@ -29,3 +29,7 @@ a SingleCellExperiment object with marker genes
 \description{
 Marker Genes will be stored in object metadata as \code{markers}
 }
+\examples{
+small_example_dataset <- find_all_markers(small_example_dataset, "gene_snn_res.1")
+stash_marker_features(small_example_dataset, "gene_snn_res.1")
+}

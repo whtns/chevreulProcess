@@ -7,6 +7,7 @@
 #'
 #' @return a vector of transcripts
 #' @export
+#' @importFrom GenomicFeatures transcripts
 #'
 #' @examples
 #'

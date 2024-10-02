@@ -14,8 +14,12 @@ build_bigwig_db <- function(bam_files,
     bigwigfiles <- map_chr(bam_files,
                            ~ bam_to_bigwig(.x,
                                            prefix = path_ext_remove(.x),
-                                           overwrite = TRUE)) |>
-        set_names(path_file) |>
+                                           overwrite = TRUE))
+    
+    names(bigwigfiles) <- path_file(bigwigfiles)
+    
+    bigwigfiles <- 
+        bigwigfiles |> 
         enframe("name", "bigWig") |>
         mutate(sample_id = 
                    str_remove(name, "_Aligned.sortedByCoord.out.bw")) |>

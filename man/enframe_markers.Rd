@@ -15,3 +15,7 @@ a table of marker genes
 \description{
 Enframe Markers
 }
+\examples{
+enframe_markers(metadata(test0)$markers$gene_snn_res.1)
+
+}

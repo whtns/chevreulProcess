@@ -10,18 +10,6 @@
 #' @importFrom chevreuldata human_gene_transcript_sce
 #' @importFrom circlize colorRamp2
 #' @importFrom cluster agnes
-#' @importFrom clustree clustree
-#' @importFrom ComplexHeatmap draw
-#' @importFrom ComplexHeatmap Heatmap
-#' @importFrom ComplexHeatmap HeatmapAnnotation
-#' @importFrom DataEditR dataEditServer
-#' @importFrom DataEditR dataEditUI
-#' @importFrom DataEditR dataFilterServer
-#' @importFrom DataEditR dataFilterUI
-#' @importFrom DataEditR dataOutputServer
-#' @importFrom DataEditR dataOutputUI
-#' @importFrom DataEditR dataSelectServer
-#' @importFrom DataEditR dataSelectUI
 #' @importFrom DBI dbAppendTable
 #' @importFrom DBI dbConnect
 #' @importFrom DBI dbDisconnect
@@ -65,8 +53,6 @@
 #' @importFrom fs path_ext_set
 #' @importFrom fs path_file
 #' @importFrom future plan
-#' @importFrom ggplotify as.ggplot
-#' @importFrom ggpubr theme_pubr
 #' @importFrom glue glue
 #' @importFrom graphics points
 #' @importFrom graphics text
@@ -78,18 +64,7 @@
 #' @importFrom methods is
 #' @importFrom methods slot
 #' @importFrom methods slot<-
-#' @importFrom patchwork wrap_plots
 #' @importFrom pillar new_pillar_type
-#' @importFrom plotly config
-#' @importFrom plotly event_data
-#' @importFrom plotly ggplotly
-#' @importFrom plotly highlight
-#' @importFrom plotly layout
-#' @importFrom plotly partial_bundle
-#' @importFrom plotly plotlyOutput
-#' @importFrom plotly renderPlotly
-#' @importFrom plotly style
-#' @importFrom plotly toWebGL
 #' @importFrom purrr flatten_chr
 #' @importFrom purrr map
 #' @importFrom purrr map_chr
@@ -127,33 +102,6 @@
 #' @importFrom scuttle addPerCellQCMetrics
 #' @importFrom scuttle logNormCounts
 #' @importFrom scuttle mockSCE
-#' @importFrom shiny incProgress
-#' @importFrom shiny selectInput
-#' @importFrom shiny withProgress
-#' @importFrom shinydashboard box
-#' @importFrom shinydashboard dashboardBody
-#' @importFrom shinydashboard dashboardHeader
-#' @importFrom shinydashboard dashboardSidebar
-#' @importFrom shinydashboard menuItem
-#' @importFrom shinydashboard sidebarMenu
-#' @importFrom shinydashboard tabItem
-#' @importFrom shinydashboard tabItems
-#' @importFrom shinyFiles getVolumes
-#' @importFrom shinyFiles parseFilePaths
-#' @importFrom shinyFiles parseSavePath
-#' @importFrom shinyFiles shinyFileChoose
-#' @importFrom shinyFiles shinyFileSave
-#' @importFrom shinyFiles shinyFilesButton
-#' @importFrom shinyFiles shinySaveButton
-#' @importFrom shinyhelper helper
-#' @importFrom shinyhelper observe_helpers
-#' @importFrom shinyjs alert
-#' @importFrom shinyjs hidden
-#' @importFrom shinyjs html
-#' @importFrom shinyjs runcodeServer
-#' @importFrom shinyjs runcodeUI
-#' @importFrom shinyjs useShinyjs
-#' @importFrom shinyWidgets prettyRadioButtons
 #' @importFrom stats as.dendrogram
 #' @importFrom stats dist
 #' @importFrom stats hclust
@@ -182,15 +130,11 @@
 #' @importFrom waiter transparent
 #' @importFrom waiter use_waiter
 #' @importFrom waiter Waiter
-#' @importFrom wiggleplotr plotCoverageFromEnsembldb
 #' @importFrom megadepth bam_to_bigwig
 ## usethis namespace: end
-#' @import ggplot2
 #' @import SingleCellExperiment
 #' @import SummarizedExperiment
-#' @import shiny
 #' @import dplyr
 #' @import stringr
 #' @import tidyr
 NULL
-

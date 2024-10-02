@@ -1,49 +1,4 @@
-#' Collate list of variables to be plotted
-#'
-#' @param object a SingleCellExperiment object
-#'
-#' @return plot_types a list of category_vars or continuous_vars
-#' @export
-#' @examples
-#' 
-#' data(small_example_dataset)
-#' list_plot_types(small_example_dataset)
-list_plot_types <- function(object) {
-    meta_types <- tibble(
-        vars = colnames(colData(object)),
-        var_type = map_chr(map(colData(object), new_pillar_type), 1),
-        num_levels = unlist(map(colData(object), ~ length(unique(.x))))
-    )
 
-    meta_types <- meta_types |>
-        filter(!grepl("_snn_res", vars)) |>
-        mutate(meta_type = case_when(
-            var_type %in% c("int", "dbl") ~ "continuous",
-            var_type %in% c("chr", "fct", "ord", "lgl") ~ "category"
-        )) |>
-        mutate(meta_type = ifelse(meta_type == "continuous" & num_levels < 30, "category", meta_type)) |>
-        filter(num_levels > 1) |>
-        identity()
-
-    continuous_vars <- meta_types |>
-        filter(meta_type == "continuous") |>
-        pull(vars)
-
-    continuous_vars <- c("feature", continuous_vars) |>
-        set_names(str_to_title(str_replace_all(., "[[:punct:]]", " ")))
-
-
-    category_vars <- meta_types |>
-        filter(meta_type == "category") |>
-        pull(vars) |>
-        set_names(str_to_title(str_replace_all(., "[^[:alnum:][:space:]\\.]", " ")))
-
-    plot_types <- list(category_vars = category_vars, continuous_vars = continuous_vars)
-
-
-
-    return(plot_types)
-}
 
 # Get cell metadata
 
@@ -104,6 +59,7 @@ get_object_metadata <- function(object) {
 #'
 #' @return variable features from a SingleCellExperiment object
 #' @export
+#' @importFrom scran getTopHVGs
 #' @examples
 #' 
 #' data(small_example_dataset)

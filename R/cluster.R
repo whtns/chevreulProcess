@@ -9,6 +9,10 @@
 #' @param legacy_settings Use legacy settings
 #' @param ... extra args passed to scaling functions
 #' @return a preprocessed SingleCellExperiment object
+#' @export
+#' @examples
+#' object_preprocess(small_example_dataset)
+#' 
 object_preprocess <- function(object, scale = TRUE, normalize = TRUE, 
                               features = NULL, legacy_settings = FALSE, ...) {
     clusters <- quickCluster(object)
@@ -42,6 +46,9 @@ object_preprocess <- function(object, scale = TRUE, normalize = TRUE,
 #' @param ... extra args passed to stash_marker_features
 #'
 #' @return a SingleCellExperiment object containing marker genes
+#' @export 
+#' @examples
+#' find_all_markers(small_example_dataset, "gene_snn_res.1")
 #'
 find_all_markers <- function(object, 
                              group_by = NULL, experiment = "gene", ...) {
@@ -76,6 +83,10 @@ find_all_markers <- function(object,
 #' @param marker_table a table of marker genes
 #'
 #' @return a table of marker genes
+#' @export
+#' @examples
+#' enframe_markers(metadata(test0)$markers$gene_snn_res.1)
+#' 
 enframe_markers <- function(marker_table) {
     marker_table |>
         select(Gene.Name, Cluster) |>
@@ -95,7 +106,10 @@ enframe_markers <- function(marker_table) {
 #' @param p_val_cutoff p value cut-off, Default value is "0.5"
 #'
 #' @return a SingleCellExperiment object with marker genes
-#'
+#' @export
+#' @examples
+#' small_example_dataset <- find_all_markers(small_example_dataset, "gene_snn_res.1")
+#' stash_marker_features(small_example_dataset, "gene_snn_res.1")
 stash_marker_features <- function(object, group_by, experiment = "gene", 
                                   top_n = 200, p_val_cutoff = 0.5) {
     message("stashing markers for ", group_by)

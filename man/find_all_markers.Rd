@@ -21,3 +21,7 @@ a SingleCellExperiment object containing marker genes
 \description{
 Find all markers at a range of resolutions
 }
+\examples{
+find_all_markers(small_example_dataset, "gene_snn_res.1")
+
+}
