@@ -54,7 +54,6 @@ Imports:
     graphics,
     stats,
     utils,
-    pillar,
     cluster,
     circlize,
     bluster,

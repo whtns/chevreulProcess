@@ -1,8 +1,58 @@
+#' Collate list of variables to be plotted
+#'
+#' @param object a SingleCellExperiment object
+#'
+#' @return plot_types a list of category_vars or continuous_vars
+#' @export
+#' @examples
+#' 
+#' data(small_example_dataset)
+#' list_plot_types(small_example_dataset)
+list_plot_types <- function(object) {
+    meta_types <- tibble(
+        vars = colnames(colData(object)),
+        var_type = map_chr(colData(object), class),
+        num_levels = unlist(map(colData(object), ~ length(unique(.x))))
+    )
+
+    meta_types <- meta_types |>
+        filter(!grepl("_snn_res", vars)) |>
+        mutate(meta_type = case_when(
+            var_type %in% c("integer", "numeric") ~ "continuous",
+            var_type %in% c("character", "factor", "logical") ~ "category"
+        )) |>
+        mutate(meta_type = ifelse(meta_type == "continuous" & num_levels < 30, "category", meta_type)) |>
+        filter(num_levels > 1) |>
+        identity()
+
+    continuous_vars <- meta_types |>
+        filter(meta_type == "continuous") |>
+        pull(vars)
+
+    continuous_vars <- c("feature", continuous_vars)
+    
+    names(continuous_vars) <- 
+        str_to_title(str_replace_all(continuous_vars, "[[:punct:]]", " "))
+
+    category_vars <- meta_types |>
+        filter(meta_type == "category") |>
+        pull(vars)
+    
+    names(category_vars) <-  
+        str_to_title(str_replace_all(
+            category_vars, 
+            "[^[:alnum:][:space:]\\.]", " "))
+
+    plot_types <- list(category_vars = category_vars, continuous_vars = continuous_vars)
 
 
-# Get cell metadata
+
+    return(plot_types)
+}
 
 #' Get cell metadata from a given object
+#' 
+#' Get cell metadata
 #'
 #' @param object a SingleCellExperiment object
 #'
@@ -11,14 +61,14 @@
 #' @examples
 #' 
 #' data(small_example_dataset)
-#' get_cell_metadata(small_example_dataset)
-get_cell_metadata <- function(object) {
+#' get_colData(small_example_dataset)
+get_colData <- function(object) {
     colData(object) |>
         as.data.frame()
 }
 
-# set cell metadata
-
+#' Set cell metadata
+#' 
 #' Set cell metadata from a given object
 #'
 #' @param object a SingleCellExperiment object
@@ -31,8 +81,8 @@ get_cell_metadata <- function(object) {
 #' data(small_example_dataset)
 #' new_meta <- data.frame(row.names = colnames(small_example_dataset))
 #' new_meta$example <- "example"
-#' set_cell_metadata(small_example_dataset, new_meta)
-set_cell_metadata <- function(object, meta) {
+#' set_colData(small_example_dataset, new_meta)
+set_colData <- function(object, meta) {
     colData(object) <- DataFrame(meta)
     return(object)
 }
@@ -59,7 +109,6 @@ get_object_metadata <- function(object) {
 #'
 #' @return variable features from a SingleCellExperiment object
 #' @export
-#' @importFrom scran getTopHVGs
 #' @examples
 #' 
 #' data(small_example_dataset)
@@ -71,8 +120,6 @@ get_variable_features <- function(object, experiment = "gene") {
         getTopHVGs(altExp(object, experiment))
     }
 }
-
-# get feature names ------------------------------
 
 #' Get feature names
 #'
@@ -93,7 +140,6 @@ get_features <- function(object, experiment = "gene") {
     }
 }
 
-
 #' Get Feature Types
 #'
 #' @param object a SingleCellExperiment object
@@ -113,7 +159,7 @@ get_feature_types <- function(object) {
 #'
 #' @param object a SingleCellExperiment object
 #' @param feature_type feature type
-#' @return an object with assigned feature type
+#' @return a SingleCellExperiment object with assigned feature type
 #' @export
 #'
 #' @examples
@@ -132,7 +178,7 @@ set_feature_type <- function(object, feature_type) {
 #' @param object a SingleCellExperiment object
 #' @param experiment an experiment name
 #'
-#' @return Main or alt experiment in an object
+#' @return Main or alt experiment in a SingleCellExperiment object
 #' @export
 #'
 #' @examples
@@ -152,6 +198,7 @@ retrieve_experiment <- function(object, experiment) {
 #'
 #' @param object a SingleCellExperiment object
 #' @param experiment an experiment name
+#' @export
 #'
 #' @return logical scalar indicating if experiment is present in object
 query_experiment <- function(object, experiment) {

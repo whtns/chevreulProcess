@@ -26,7 +26,6 @@ splitByCol <- function(x, f = "batch") {
     return(v)
 }
 
-
 #' Merge Small SingleCellExperiment Objects
 #'
 #' @param ... two or more singlecell objects
@@ -50,7 +49,6 @@ merge_small_objects <- function(..., k.filter = 50) {
 
     return(object_list)
 }
-
 
 #' Batch Correct Multiple Single Cell Objects
 #'
@@ -107,6 +105,7 @@ object_integrate <- function(object_list, organism = "human", ...) {
 #' @param suffix to be appended to file saved in output dir
 #' @param reduction to use default is pca
 #' @param ... extra args passed to object_integration_pipeline
+#' @export
 #'
 #' @return a SingleCellExperiment object
 reintegrate_object <- function(object, suffix = "", reduction = "PCA", ...) {

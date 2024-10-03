@@ -10,8 +10,6 @@ convert_human_object_to_mouse <- function(object, ...) {
 
     object_slots <- c("counts", "data", "scale.data", "meta.features")
 
-
-
     for (i in object_slots) {
         rownames(slot(object@experiments[["gene"]], i)) <- new_rownames
     }

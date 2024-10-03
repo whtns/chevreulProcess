@@ -1,6 +1,6 @@
 # Differential expression
 
-Differential expression can be used to identify genes which vary significantly between two populations of cells. Testing is executed via `Seurat::FindMarkers` and can be specified to use several methods including:
+Differential expression can be used to identify genes which vary significantly between two populations of cells. Testing is executed via `SingleCellExperiment::FindMarkers` and can be specified to use several methods including:
 1. Student's t-test
 2. Wilcoxon rank-sum test
 3. Likelihood ratio test assuming an underlying negative binomial distribution

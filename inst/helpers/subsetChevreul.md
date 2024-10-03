@@ -10,7 +10,7 @@ Selection on a dimensionally-reduced plot can be accomplished by first selecting
 
 Selection via an uploaded csv can be accomplished by formatting a csv file with cells to retain listed in the first column then uploading and selecting 'Subset by CSV'
 
-If the dataset to be subset consists of a single batch (not integrated) subsetting will perform clustering, marker gene, and pathway enrichment as defined in `seurat_pipeline`
+If the dataset to be subset consists of a single batch (not integrated) subsetting will perform clustering, marker gene, and pathway enrichment as defined in `SingleCellExperiment_pipeline`
 
-If the dataset to be subset is already integrated, subsetting will result in integration based on the 'batch' variable then proceed with clustering, marker gene, and pathway enrichment as defined in `seurat_integration_pipeline`
+If the dataset to be subset is already integrated, subsetting will result in integration based on the 'batch' variable then proceed with clustering, marker gene, and pathway enrichment as defined in `SingleCellExperiment_integration_pipeline`
 

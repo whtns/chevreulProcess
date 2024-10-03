@@ -19,5 +19,5 @@ Cleans names of objects provided in a vector form
 
 data(small_example_dataset)
 make_chevreul_clean_names(colnames(
-get_cell_metadata(small_example_dataset)))
+get_colData(small_example_dataset)))
 }

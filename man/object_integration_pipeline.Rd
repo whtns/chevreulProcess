@@ -26,7 +26,8 @@ object_integration_pipeline(
 
 \item{annotate_cell_cycle}{whether to score cell cycle phases}
 
-\item{annotate_percent_mito}{logical scalar whether to annotate mitochondrial percentage}
+\item{annotate_percent_mito}{logical scalar
+whether to annotate mitochondrial percentage}
 
 \item{reduction}{pca, umap, or tsne}
 

@@ -46,7 +46,6 @@ integration_workflow <- function(batches, excluded_cells = NULL,
     return(merged_batches)
 }
 
-
 #' Clustering Workflow
 #'
 #' Cluster and Reduce Dimensions of a object

@@ -12,7 +12,8 @@
 #' @param annotate_cell_cycle whether to score cell cycle phases
 #' @param reduction pca, umap, or tsne
 #' @param ... extra args passed to object_integrate
-#' @param annotate_percent_mito logical scalar whether to annotate mitochondrial percentage
+#' @param annotate_percent_mito logical scalar
+#' whether to annotate mitochondrial percentage
 #'
 #' @return an integrated SingleCellExperiment object
 object_integration_pipeline <- function(object_list, resolution = seq(0.2, 2.0, by = 0.2), suffix = "", organism = "human", annotate_cell_cycle = FALSE, annotate_percent_mito = FALSE, reduction = "PCA", ...) {
@@ -71,6 +72,7 @@ object_integration_pipeline <- function(object_list, resolution = seq(0.2, 2.0, 
 #' @param reduction Dimensional reduction object
 #' @param organism Organism
 #' @param ... extra parameters passed to internal functions
+#' @export
 #'
 #' @return a processed SingleCellExperiment object
 object_pipeline <- function(object, experiment = "gene", resolution = 0.6, reduction = "PCA", organism = "human", ...) {
@@ -104,49 +106,6 @@ object_pipeline <- function(object, experiment = "gene", resolution = 0.6, reduc
     return(object)
 }
 
-#' Run Louvain Clustering at Multiple Resolutions
-#'
-#' @param object A SingleCellExperiment objects
-#' @param resolution Clustering resolution
-#' @param custom_clust custom cluster
-#' @param reduction Set dimensional reduction object
-#' @param algorithm 1
-#' @param ... extra args passed to single cell packages
-#'
-#' @return a SingleCellExperiment object with louvain clusters
-object_cluster <- function(object = object, resolution = 0.6, 
-                           custom_clust = NULL, reduction = "PCA", 
-                           algorithm = 1, ...) {
-    message(glue("[{format(Sys.time(), '%H:%M:%S')}] Clustering Cells..."))
-    if (length(resolution) > 1) {
-        for (i in resolution) {
-            message(glue("clustering at {i} resolution"))
-            cluster_labels <- 
-                clusterCells(object,
-                             use.dimred = reduction,
-                             BLUSPARAM = NNGraphParam(cluster.fun = "louvain", 
-                                                      cluster.args = 
-                                                          list(resolution = i))
-            )
-            colData(object)[[glue("gene_snn_res.{i}")]] <- cluster_labels
-        }
-    } else if (length(resolution) == 1) {
-        message(glue("clustering at {resolution} resolution"))
-        cluster_labels <- clusterCells(object,
-                                       use.dimred = reduction,
-                                       BLUSPARAM = NNGraphParam(
-                                           cluster.fun = "louvain", 
-                                           cluster.args = 
-                                               list(resolution = resolution))
-        )
-        
-        
-        colData(object)[[glue("gene_snn_res.{resolution}")]] <- cluster_labels
-    }
-    
-    return(object)
-}
-
 #' Dimensional Reduction
 #'
 #' Run PCA, TSNE and UMAP on a singlecell objects
@@ -159,6 +118,7 @@ object_cluster <- function(object = object, resolution = 0.6,
 #'
 #' @return a SingleCellExperiment object with embeddings
 object_reduce_dimensions <- function(object, experiment = "gene", ...) {
+
     num_samples <- dim(object)[[2]]
     if (num_samples < 50) {
         npcs <- num_samples - 1
@@ -188,6 +148,7 @@ object_reduce_dimensions <- function(object, experiment = "gene", ...) {
                               n_dimred = seq(30))
         }
     }
+
     return(object)
 }
 

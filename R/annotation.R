@@ -48,6 +48,13 @@ genes_to_transcripts <- function(symbols, organism = "human") {
 #' transcripts_to_genes(transcripts = NRL_transcripts_hs)
 #'
 transcripts_to_genes <- function(transcripts, organism = "human") {
+    
+    data_env <- new.env(parent = emptyenv())
+    data("grch38", envir = data_env, package = "chevreul")
+    data("grch38_tx2gene", envir = data_env, package = "chevreul")
+    grch38 <- data_env[["grch38"]]
+    grch38_tx2gene <- data_env[["grch38_tx2gene"]]
+    
     if (organism == "human") {
         gene_table <- grch38
         transcript_table <- grch38_tx2gene

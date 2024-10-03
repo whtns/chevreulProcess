@@ -1,3 +1,86 @@
+#' Run Differential Expression
+#'
+#'
+#'
+#' @param object a SingleCellExperiment object
+#' @param cluster1 cluster 1
+#' @param cluster2 cluster 2
+#' @param resolution resolution
+#' @param diffex_scheme scheme for differential expression
+#' @param featureType gene or transcript
+#' @param tests t, wilcox, or bimod
+#'
+#'
+#' @return a dataframe with differential expression information
+run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
+                          diffex_scheme = "louvain", featureType = "gene",
+                          tests = c("t", "wilcox", "bimod")) {
+
+    data_env <- new.env(parent = emptyenv())
+    data("grch38", envir = data_env, package = "chevreul")
+    data("grch38_tx2gene", envir = data_env, package = "chevreul")
+    grch38 <- data_env[["grch38"]]
+    grch38_tx2gene <- data_env[["grch38_tx2gene"]]
+
+    match.arg(tests)
+
+    if (featureType == "transcript") object <- altExp(object, "transcript")
+
+    if (diffex_scheme == "louvain") {
+        if (query_experiment(object, "integrated")) {
+            active_experiment <- "integrated"
+        } else {
+            active_experiment <- "gene"
+        }
+        colLabels(object) <- colData(object)[[paste0(active_experiment,
+                                                     "_snn_res.", resolution)]]
+        object <- object[, colLabels(object) %in% c(cluster1, cluster2)]
+        colLabels(object) <- factor(colLabels(object))
+    } else if (diffex_scheme == "custom") {
+        object <- object[, c(cluster1, cluster2)]
+        keep_cells <- c(cluster1, cluster2)
+        new_idents <- c(rep(1, length(cluster1)), rep(2, length(cluster2)))
+        names(new_idents) <- keep_cells
+        new_idents <- new_idents[colnames(object)]
+        colLabels(object) <- new_idents
+        cluster1 <- 1
+        cluster2 <- 2
+    }
+    test_list <- vector("list", length(tests))
+    for (test in tests) {
+        message(test)
+        de <- findMarkers(object, test.type = test)
+        if (featureType == "transcript") {
+            de_cols <- c("enstxp", "ensgene", "symbol", "p_val" = "p.value",
+                         "avg_log2FC", "pct.1", "pct.2", "p_val_adj" = "FDR")
+            de <- de[[1]] |>
+                as.data.frame() |>
+                rownames_to_column("enstxp") |>
+                left_join(grch38_tx2gene, by = "enstxp") |>
+                left_join(grch38, by = "ensgene")
+            if ("summary.logFC" %in% colnames(de)) {
+                de <- mutate(de, avg_log2FC = log(exp(summary.logFC), 2))
+            }
+            de <- select(de, any_of(de_cols))
+        } else if (featureType == "gene") {
+            de_cols <- c("ensgene", "symbol", 
+                         "p_val" = "p.value", "avg_log2FC",
+                         "pct.1", "pct.2", "p_val_adj" = "FDR")
+            de <- de[[1]] |>
+                as.data.frame() |>
+                rownames_to_column("symbol") |>
+                left_join(grch38, by = "symbol")
+            if ("summary.logFC" %in% colnames(de)) {
+                de <- mutate(de, avg_log2FC = log(exp(summary.logFC), 2))
+            }
+            de <- select(de, any_of(de_cols))
+        }
+        test_list[[match(test, tests)]] <- de
+    }
+    names(test_list) <- tests
+    return(test_list)
+}
+
 #' Preprocess Single Cell Object
 #'
 #' Performs standard pre-processing workflow for scRNA-seq data
@@ -12,7 +95,7 @@
 #' @export
 #' @examples
 #' object_preprocess(small_example_dataset)
-#' 
+#'
 object_preprocess <- function(object, scale = TRUE, normalize = TRUE, 
                               features = NULL, legacy_settings = FALSE, ...) {
     clusters <- quickCluster(object)
@@ -20,17 +103,6 @@ object_preprocess <- function(object, scale = TRUE, normalize = TRUE,
     # summary(sizeFactors(object))
 
     object <- logNormCounts(object)
-
-    dec <- modelGeneVar(object)
-
-    # Get the top 10% of genes.
-    top.hvgs <- getTopHVGs(dec, prop = 0.1)
-    object <- runPCA(object, subset_row = top.hvgs)
-
-    output <- getClusteredPCs(reducedDim(object))
-
-    g1 <- buildSNNGraph(object, use.dimred = "PCA")
-
 
     return(object)
 }
@@ -53,16 +125,16 @@ object_preprocess <- function(object, scale = TRUE, normalize = TRUE,
 find_all_markers <- function(object, 
                              group_by = NULL, experiment = "gene", ...) {
     if (is.null(group_by)) {
-        meta_cols <- colnames(get_cell_metadata(object))
-        resolutions <- meta_cols[grepl(paste0(experiment, "_snn_res."), 
-                                       meta_cols)]
+        meta_cols <- colnames(get_colData(object))
+        # resolutions <- meta_cols[grepl(paste0(experiment, "_snn_res."), 
+        #                                meta_cols)]
         cluster_index <- grepl(paste0(experiment, "_snn_res."), meta_cols)
         if (!any(cluster_index)) {
             warning("no clusters found in metadata. runnings object_cluster")
             object <- object_cluster(object, 
                                      resolution = seq(0.2, 1, by = 0.2))
         }
-        clusters <- get_cell_metadata(object)[, cluster_index]
+        clusters <- get_colData(object)[, cluster_index]
         cluster_levels <- map_int(clusters, ~ length(unique(.x)))
         cluster_levels <- cluster_levels[cluster_levels > 1]
         clusters <- select(clusters, one_of(names(cluster_levels)))
@@ -75,24 +147,6 @@ find_all_markers <- function(object,
         metadata(object)[["markers"]]) %in% names(new_markers)]
     metadata(object)[["markers"]] <- c(old_markers, new_markers)
     return(object)
-}
-
-
-#' Enframe Markers
-#'
-#' @param marker_table a table of marker genes
-#'
-#' @return a table of marker genes
-#' @export
-#' @examples
-#' enframe_markers(metadata(test0)$markers$gene_snn_res.1)
-#' 
-enframe_markers <- function(marker_table) {
-    marker_table |>
-        select(Gene.Name, Cluster) |>
-        mutate(rn = row_number()) |>
-        pivot_wider(names_from = Cluster, values_from = Gene.Name) |>
-        select(-rn)
 }
 
 #' Stash Marker Genes in a SingleCellExperiment Object
@@ -128,4 +182,47 @@ stash_marker_features <- function(object, group_by, experiment = "gene",
                Adjusted.pvalue = FDR, Cluster = group) |>
         identity()
     return(markers)
+}
+
+#' Run Louvain Clustering at Multiple Resolutions
+#'
+#' @param object A SingleCellExperiment objects
+#' @param resolution Clustering resolution
+#' @param custom_clust custom cluster
+#' @param reduction Set dimensional reduction object
+#' @param algorithm 1
+#' @param ... extra args passed to single cell packages
+#'
+#' @return a SingleCellExperiment object with louvain clusters
+object_cluster <- function(object = object, resolution = 0.6, 
+                           custom_clust = NULL, reduction = "PCA", 
+                           algorithm = 1, ...) {
+    message(glue("[{format(Sys.time(), '%H:%M:%S')}] Clustering Cells..."))
+    if (length(resolution) > 1) {
+        for (i in resolution) {
+            message(glue("clustering at {i} resolution"))
+            cluster_labels <- 
+                clusterCells(object,
+                             use.dimred = reduction,
+                             BLUSPARAM = NNGraphParam(cluster.fun = "louvain", 
+                                                      cluster.args = 
+                                                          list(resolution = i))
+            )
+            colData(object)[[glue("gene_snn_res.{i}")]] <- cluster_labels
+        }
+    } else if (length(resolution) == 1) {
+        message(glue("clustering at {resolution} resolution"))
+        cluster_labels <- clusterCells(object,
+                                       use.dimred = reduction,
+                                       BLUSPARAM = NNGraphParam(
+                                           cluster.fun = "louvain", 
+                                           cluster.args = 
+                                               list(resolution = resolution))
+        )
+        
+        
+        colData(object)[[glue("gene_snn_res.{resolution}")]] <- cluster_labels
+    }
+    
+    return(object)
 }

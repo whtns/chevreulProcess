@@ -15,7 +15,6 @@ get_transcripts_from_object <- function(object, gene, organism = "human") {
                                                              "transcript")]
 }
 
-
 #' Record Experiment Metadata
 #'
 #' Records miscellaneous data
@@ -113,7 +112,6 @@ object_calcn <- function(object) {
     return(object)
 }
 
-
 #' Propagate Metadata Changes
 #'
 #' @param meta updated metadata
@@ -130,11 +128,11 @@ object_calcn <- function(object) {
 #'
 #' propagate_spreadsheet_changes(new_meta, small_example_dataset)
 propagate_spreadsheet_changes <- function(meta, object) {
-    meta <- meta %>%
-        tibble::rownames_to_column("cell") %>%
-        mutate(across(contains("snn"), as.factor)) %>%
-        mutate(across(where(is.ordered), ~ as.factor(as.character(.x)))) %>%
-        tibble::column_to_rownames("cell") %>%
+    meta <- meta |>
+        rownames_to_column("cell") |>
+        mutate(across(contains("snn"), as.factor)) |>
+        mutate(across(where(is.ordered), ~ as.factor(as.character(.x)))) |>
+        column_to_rownames("cell") |>
         identity()
 
     colData(object) <- DataFrame(meta)
@@ -200,23 +198,23 @@ update_project_db <- function(
 
     projects_tbl <-
         dir_ls(projects_dir, glob = "*.here", recurse = TRUE, 
-               fail = FALSE, all = TRUE) %>%
+               fail = FALSE, all = TRUE) |>
         path_dir(.)
     
     names(projects_tbl) <- path_file(projects_tbl)
     
     projects_tbl <- 
-        projects_tbl %>%
-        enframe("project_name", "project_path") %>%
-        mutate(project_slug = str_remove(project_name, "_proj$")) %>%
-        mutate(project_type = path_file(path_dir(project_path))) %>%
+        projects_tbl |>
+        enframe("project_name", "project_path") |>
+        mutate(project_slug = str_remove(project_name, "_proj$")) |>
+        mutate(project_type = path_file(path_dir(project_path))) |>
         identity()
 
     current_projects_tbl <-
-        dbReadTable(con, "projects_tbl") %>%
-        filter(file.exists(project_path)) %>%
-        filter(!project_path %in% projects_tbl$project_path) %>%
-        bind_rows(projects_tbl) %>%
+        dbReadTable(con, "projects_tbl") |>
+        filter(file.exists(project_path)) |>
+        filter(!project_path %in% projects_tbl$project_path) |>
+        bind_rows(projects_tbl) |>
         distinct(project_path, .keep_all = TRUE)
 
     dbWriteTable(con, "projects_tbl", projects_tbl, overwrite = TRUE)
@@ -233,7 +231,6 @@ update_project_db <- function(
 #' @param sqlite_db sqlite db
 #' @param verbose print messages
 #' @return a sqlite database with SingleCellExperiment objects
-
 append_to_project_db <- function(
         new_project_path,
         cache_location = "~/.cache/chevreul",
@@ -252,16 +249,16 @@ append_to_project_db <- function(
     
     projects_tbl <- 
         projects_tbl |> 
-        enframe("project_name", "project_path") %>%
-        mutate(project_slug = str_remove(project_name, "_proj$")) %>%
-        mutate(project_type = path_file(path_dir(project_path))) %>%
+        enframe("project_name", "project_path") |>
+        mutate(project_slug = str_remove(project_name, "_proj$")) |>
+        mutate(project_type = path_file(path_dir(project_path))) |>
         identity()
 
     current_projects_tbl <-
-        dbReadTable(con, "projects_tbl") %>%
-        filter(file.exists(project_path)) %>%
-        filter(!project_path %in% projects_tbl$project_path) %>%
-        bind_rows(projects_tbl) %>%
+        dbReadTable(con, "projects_tbl") |>
+        filter(file.exists(project_path)) |>
+        filter(!project_path %in% projects_tbl$project_path) |>
+        bind_rows(projects_tbl) |>
         distinct(project_path, .keep_all = TRUE)
 
     dbWriteTable(con, "projects_tbl", current_projects_tbl, overwrite = TRUE)
@@ -279,7 +276,6 @@ append_to_project_db <- function(
 #'
 #' @return a tibble with SingleCellExperiment objects
 #
-
 read_project_db <- function(
         cache_location = "~/.cache/chevreul",
         sqlite_db = "single-cell-projects.db",
@@ -298,42 +294,6 @@ read_project_db <- function(
     return(current_projects_tbl)
 }
 
-#' Make Bigwig Database
-#'
-#'
-#' @param new_project Project directory
-#' @param cache_location Path to cache "~/.cache/chevreul"
-#' @param sqlite_db sqlite db containing bw files
-#'
-#' @return a sqlite database of bigwig files for cells 
-#' in a SingleCellExperiment object
-make_bigwig_db <- function(new_project = NULL, 
-                           cache_location = "~/.cache/chevreul/", 
-                           sqlite_db = "bw-files.db") {
-    new_bigwigfiles <- dir_ls(new_project, glob = "*.bw", recurse = TRUE)
-    
-    names(new_bigwigfiles) <- path_file(new_bigwigfiles)
-    
-    new_bigwigfiles <- 
-        new_bigwigfiles |> 
-        enframe("name", "bigWig") %>%
-        mutate(sample_id = 
-                   str_remove(name, "_Aligned.sortedByCoord.out.*bw$")) %>%
-        filter(!str_detect(name, "integrated")) %>%
-        distinct(sample_id, .keep_all = TRUE) %>%
-        identity()
-
-    con <- dbConnect(SQLite(), dbname = path(cache_location, sqlite_db))
-
-    all_bigwigfiles <-
-        dbReadTable(con, "bigwigfiles") %>%
-        bind_rows(new_bigwigfiles)
-
-    dbWriteTable(con, "bigwigfiles", all_bigwigfiles, overwrite = TRUE)
-
-    return(all_bigwigfiles)
-}
-
 #' Retrieve Metadata from Batch
 #'
 #' @param batch batch
@@ -346,17 +306,17 @@ metadata_from_batch <- function(
         db_path = "single-cell-projects.db") {
     mydb <- dbConnect(SQLite(), path(projects_dir, db_path))
 
-    projects_tbl <- dbReadTable(mydb, "projects_tbl") %>%
+    projects_tbl <- dbReadTable(mydb, "projects_tbl") |>
         filter(!project_type %in% c("integrated_projects", "resources"))
 
     dbDisconnect(mydb)
 
     metadata <-
-        projects_tbl %>%
-        filter(project_slug == batch) %>%
-        pull(project_path) %>%
-        path("data") %>%
-        dir_ls(glob = "*.csv") %>%
+        projects_tbl |>
+        filter(project_slug == batch) |>
+        pull(project_path) |>
+        path("data") |>
+        dir_ls(glob = "*.csv") |>
         identity()
 }
 
@@ -372,7 +332,7 @@ metadata_from_batch <- function(
 #' 
 #' data(small_example_dataset)
 #' make_chevreul_clean_names(colnames(
-#' get_cell_metadata(small_example_dataset)))
+#' get_colData(small_example_dataset)))
 make_chevreul_clean_names <- function(myvec) {
     names(myvec) <- 
         myvec |> 

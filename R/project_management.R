@@ -1,60 +1,25 @@
-#' Create a Table of single Cell Projects
+
+#' Subset by new colData
 #'
-#' Uses a list of projects to create a matrix of single cell projects
+#' Subset the object using new colData
 #'
-#' @param proj_list List of projects
-#'
-#' @return a tibble of single cell projects
-create_proj_matrix <- function(proj_list) {
-    proj_list <- unlist(proj_list)
-
-    proj_tbl <- tibble(project_path = proj_list, project_name = path_file(proj_list))
-
-    patterns <- c("{date}-{user}-{note}-{species}_proj")
-
-    proj_matrix <- unglue::unglue_data(proj_list, patterns) |>
-        mutate(date = path_file(date)) |>
-        bind_cols(proj_tbl) |>
-        identity()
-
-    primary_projects <-
-        proj_matrix |>
-        filter(!grepl("integrated_projects", project_path)) |>
-        filter(str_count(project_name, "_") == 1) |>
-        identity()
-
-    integrated_projects <-
-        proj_matrix |>
-        anti_join(primary_projects) |>
-        identity()
-
-    proj_matrices <- list(primary_projects = primary_projects, integrated_projects = integrated_projects)
-
-    return(proj_matrices)
-}
-
-
-#' Subset by new metadata
-#'
-#' Subset the object using new metadata
-#'
-#' @param meta_path Path to new metadata
+#' @param colData_path Path to new colData
 #' @param object A object
 #'
 #' @return a SingleCellExperiment object
 #'
-subset_by_meta <- function(meta_path, object) {
-    upload_meta <- read_csv(meta_path, col_names = "sample_id") |>
+subset_by_colData <- function(colData_path, object) {
+    upload_colData <- read_csv(colData_path, col_names = "sample_id") |>
         filter(!is.na(sample_id) & !sample_id == "sample_id") |>
         mutate(name = sample_id) |>
         column_to_rownames("sample_id") |>
         identity()
 
-    upload_cells <- rownames(upload_meta)
+    upload_cells <- rownames(upload_colData)
 
     object <- object[, colnames(object) %in% upload_cells]
 
-    colData(object) <- merge(colData(object), upload_meta, by = "row.names")
+    colData(object) <- merge(colData(object), upload_colData, by = "row.names")
 
     return(object)
 }
