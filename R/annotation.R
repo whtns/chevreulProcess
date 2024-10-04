@@ -13,6 +13,7 @@
 #'
 #' genes_to_transcripts("NRL")
 genes_to_transcripts <- function(symbols, organism = "human") {
+
     if (organism == "human") {
         feature_table <- transcripts(EnsDb.Hsapiens.v86,
             columns = c("gene_name", "gene_biotype", "gene_id"),
