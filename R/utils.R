@@ -199,7 +199,7 @@ update_project_db <- function(
     projects_tbl <-
         dir_ls(projects_dir, glob = "*.here", recurse = TRUE, 
                fail = FALSE, all = TRUE) |>
-        path_dir(.)
+        path_dir()
     
     names(projects_tbl) <- path_file(projects_tbl)
     

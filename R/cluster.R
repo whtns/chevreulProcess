@@ -99,6 +99,7 @@ run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
 #' @return a preprocessed SingleCellExperiment object
 #' @export
 #' @examples
+#' data("small_example_dataset")
 #' object_preprocess(small_example_dataset)
 #'
 object_preprocess <- function(object, scale = TRUE, normalize = TRUE, 
@@ -125,6 +126,7 @@ object_preprocess <- function(object, scale = TRUE, normalize = TRUE,
 #' @return a SingleCellExperiment object containing marker genes
 #' @export 
 #' @examples
+#' data("small_example_dataset")
 #' find_all_markers(small_example_dataset, "gene_snn_res.1")
 #'
 find_all_markers <- function(object, 
@@ -197,6 +199,7 @@ stash_marker_features <- function(object, group_by, experiment = "gene",
 #' @param reduction Set dimensional reduction object
 #' @param algorithm 1
 #' @param ... extra args passed to single cell packages
+#' @export
 #'
 #' @return a SingleCellExperiment object with louvain clusters
 object_cluster <- function(object = object, resolution = 0.6, 

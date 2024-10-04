@@ -10,6 +10,7 @@
 #' @importFrom circlize colorRamp2
 #' @importFrom cluster agnes
 #' @importFrom DBI dbConnect
+#' @importFrom DBI dbDisconnect
 #' @importFrom DBI dbReadTable
 #' @importFrom DBI dbWriteTable
 #' @importFrom dplyr arrange
