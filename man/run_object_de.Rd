@@ -36,6 +36,7 @@ a dataframe with differential expression information
 Run Differential Expression
 }
 \examples{
+data("tiny_sce")
 run_object_de(tiny_sce, 
 colnames(tiny_sce)[1:100], 
 colnames(tiny_sce)[101:200], 

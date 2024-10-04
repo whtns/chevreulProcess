@@ -11,6 +11,7 @@
 #' @param tests t, wilcox, or bimod
 #' @export
 #' @examples 
+#' data("tiny_sce")
 #' run_object_de(tiny_sce, 
 #' colnames(tiny_sce)[1:100], 
 #' colnames(tiny_sce)[101:200], 
@@ -169,6 +170,7 @@ find_all_markers <- function(object,
 #' @return a SingleCellExperiment object with marker genes
 #' @export
 #' @examples
+#' data("small_example_dataset")
 #' small_example_dataset <- find_all_markers(small_example_dataset, "gene_snn_res.1")
 #' stash_marker_features(small_example_dataset, "gene_snn_res.1")
 stash_marker_features <- function(object, group_by, experiment = "gene", 

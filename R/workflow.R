@@ -11,6 +11,7 @@
 #' @param experiment_name arbitrary name to identify experiment
 #' @param organism either "human" or "mouse"
 #' @param ... extra args passed to object_integration_pipeline
+#' @export
 #'
 #' @return an integrated SingleCellExperiment object
 integration_workflow <- function(batches, excluded_cells = NULL,

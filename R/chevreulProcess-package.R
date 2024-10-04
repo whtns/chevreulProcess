@@ -81,6 +81,7 @@
 #' @importFrom scran quickCluster
 #' @importFrom scuttle addPerCellQCMetrics
 #' @importFrom scuttle logNormCounts
+#' @importFrom stats runif
 #' @importFrom stringr str_detect
 #' @importFrom stringr str_remove
 #' @importFrom stringr str_replace

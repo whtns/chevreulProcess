@@ -39,6 +39,7 @@ Imports:
     stringr,
     tibble,
     scran,
+    stats,
     EnhancedVolcano,
     EnrichmentBrowser,
     harmony,
