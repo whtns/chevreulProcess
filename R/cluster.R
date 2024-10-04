@@ -9,7 +9,12 @@
 #' @param diffex_scheme scheme for differential expression
 #' @param featureType gene or transcript
 #' @param tests t, wilcox, or bimod
-#'
+#' @export
+#' @examples 
+#' run_object_de(tiny_sce, 
+#' colnames(tiny_sce)[1:100], 
+#' colnames(tiny_sce)[101:200], 
+#' diffex_scheme = "custom")
 #'
 #' @return a dataframe with differential expression information
 run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
@@ -22,7 +27,7 @@ run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
     grch38 <- data_env[["grch38"]]
     grch38_tx2gene <- data_env[["grch38_tx2gene"]]
 
-    match.arg(tests)
+    tests <- match.arg(tests)
 
     if (featureType == "transcript") object <- altExp(object, "transcript")
 

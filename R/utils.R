@@ -340,22 +340,6 @@ make_chevreul_clean_names <- function(myvec) {
         str_to_title()
 }
 
-#' Get metadata from object
-#'
-#' Get metadata from the given object
-#'
-#' @param object a SingleCellExperiment object
-#'
-#' @return a tibble with metadata from a SingleCellExperiment object
-#' @export
-#' @examples
-#' 
-#' data(small_example_dataset)
-#' metadata_from_object(small_example_dataset)
-#'
-metadata_from_object <- function(object) {
-    colnames(colData(object))
-}
 
 #' Save object to <project>/output/sce/<feature>_object.rds
 #'

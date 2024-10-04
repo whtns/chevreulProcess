@@ -35,3 +35,10 @@ a dataframe with differential expression information
 \description{
 Run Differential Expression
 }
+\examples{
+run_object_de(tiny_sce, 
+colnames(tiny_sce)[1:100], 
+colnames(tiny_sce)[101:200], 
+diffex_scheme = "custom")
+
+}
