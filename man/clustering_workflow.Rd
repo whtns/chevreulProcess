@@ -24,7 +24,7 @@ clustering_workflow(
 
 \item{experiment_name}{name of the experiment}
 
-\item{...}{extra args passed to object_pipeline}
+\item{...}{extra args passed to sce_process}
 }
 \value{
 a clustered SingleCellExperiment object

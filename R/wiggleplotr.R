@@ -6,7 +6,6 @@
 #' @param bigwig_db bigwig database
 #'
 #' @return a path to a bigwig file sqlite database
-#' @export
 build_bigwig_db <- function(bam_files, 
                             bigwig_db = "~/.cache/chevreul/bw-files.db") {
     bam_files <- normalizePath(bam_files)

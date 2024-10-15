@@ -30,17 +30,17 @@ subset_by_colData <- function(colData_path, object) {
 #' @param prefix default "unfiltered"
 #'
 #' @return a SingleCellExperiment object
-load_object_path <- function(proj_dir = getwd(), prefix = "unfiltered") {
-    object_regex <- paste0(paste0(".*/", prefix, "_object.rds"))
+load_sce_path <- function(proj_dir = getwd(), prefix = "unfiltered") {
+    sce_regex <- paste0(paste0(".*/", prefix, "_sce.rds"))
 
-    object_path <- path(proj_dir, "output", "singlecellexperiment") |>
-        dir_ls(regexp = object_regex)
+    sce_path <- path(proj_dir, "output", "singlecellexperiment") |>
+        dir_ls(regexp = sce_regex)
 
-    if (!is_empty(object_path)) {
-        return(object_path)
+    if (!is_empty(sce_path)) {
+        return(sce_path)
     }
 
-    stop(object_path, " does not exist in current working directory ", getwd(), ".",
+    stop(sce_path, " does not exist in current working directory ", getwd(), ".",
         call. = FALSE
     )
 }
@@ -49,10 +49,10 @@ load_object_path <- function(proj_dir = getwd(), prefix = "unfiltered") {
 #' Load SingleCellExperiment Files from a single project path
 #'
 #' @param proj_dir project directory
-#' @param ... extra args passed to load_object_path
+#' @param ... extra args passed to load_sce_path
 #'
 #' @return a SingleCellExperiment object
-load_object_from_proj <- function(proj_dir, ...) {
-    object_file <- load_object_path(proj_dir, ...)
-    object_file <- readRDS(object_file)
+load_sce_from_proj <- function(proj_dir, ...) {
+    sce_file <- load_sce_path(proj_dir, ...)
+    sce_file <- readRDS(sce_file)
 }

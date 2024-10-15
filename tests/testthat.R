@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(chevreul)
+library(chevreulProcess)
 
-test_check("chevreul")
+test_check("chevreulProcess")

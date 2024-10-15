@@ -10,7 +10,7 @@
 #' via `scran::findMarkers`
 #' @param experiment_name arbitrary name to identify experiment
 #' @param organism either "human" or "mouse"
-#' @param ... extra args passed to object_integration_pipeline
+#' @param ... extra args passed to sce_integrate
 #' @export
 #'
 #' @return an integrated SingleCellExperiment object
@@ -18,8 +18,6 @@ integration_workflow <- function(batches, excluded_cells = NULL,
                                  resolution = seq(0.2, 2.0, by = 0.2),
                                  experiment_name = "default_experiment",
                                  organism = "human", ...) {
-    # organisms <- map(batches, Misc, c("experiment", "organism"))
-
     organisms <- map(batches, list("meta.data", "organism", 1))
 
     if (any(map_lgl(organisms, is.null))) {
@@ -36,7 +34,7 @@ integration_workflow <- function(batches, excluded_cells = NULL,
     batches <- pmap(list(batches, experiment_names, organisms),
                     record_experiment_data)
 
-    merged_batches <- object_integration_pipeline(batches,
+    merged_batches <- sce_integrate(batches,
                                                   resolution = resolution,
                                                   organism = "human", ...)
     metadata(merged_batches)$batches <- names(batches)
@@ -56,14 +54,14 @@ integration_workflow <- function(batches, excluded_cells = NULL,
 #' @param resolution resolution(s) to use for clustering cells
 #' @param organism Organism
 #' @param experiment_name name of the experiment
-#' @param ... extra args passed to object_pipeline
+#' @param ... extra args passed to sce_process
 #'
 #' @return a clustered SingleCellExperiment object
 clustering_workflow <- function(object, excluded_cells,
                                 resolution = seq(0.2, 2.0, by = 0.2),
                                 organism = "human",
                                 experiment_name = "default_experiment", ...) {
-    object <- object_pipeline(object, resolution = resolution, ...)
+    object <- sce_process(object, resolution = resolution, ...)
 
     object <- record_experiment_data(object, experiment_name, organism)
 }

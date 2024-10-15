@@ -17,3 +17,7 @@ logical scalar indicating if experiment is present in object
 \description{
 Query Experiment
 }
+\examples{
+data(small_example_dataset)
+query_experiment(small_example_dataset, "gene")
+}

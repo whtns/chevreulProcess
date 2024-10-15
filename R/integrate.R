@@ -32,56 +32,56 @@ splitByCol <- function(x, f = "batch") {
 #' @param k.filter minimum cell number for integration
 #'
 #' @return a SingleCellExperiment object
-merge_small_objects <- function(..., k.filter = 50) {
-    object_list <- list(...)
+merge_small_sces <- function(..., k.filter = 50) {
+    sce_list <- list(...)
 
     # check if any singlecell objects are too small and if so merge
     # with the first singlecell objects
-    object_dims <- map(object_list, dim) |>
+    sce_dims <- map(sce_list, dim) |>
         map_lgl(~ .x[[2]] < k.filter)
 
-    small_objects <- object_list[object_dims]
+    small_sces <- sce_list[sce_dims]
 
-    object_list <- object_list[!object_dims]
+    sce_list <- sce_list[!sce_dims]
 
-    object_list[[1]] <- reduce(c(small_objects, object_list[[1]]), 
+    sce_list[[1]] <- reduce(c(small_sces, sce_list[[1]]), 
                                correctExperiments, PARAM = NoCorrectParam())
 
-    return(object_list)
+    return(sce_list)
 }
 
 #' Batch Correct Multiple Single Cell Objects
 #'
-#' @param object_list List of two or more SingleCellExperiment objects
+#' @param sce_list List of two or more SingleCellExperiment objects
 #' @param organism human or mouse
-#' @param ... extra args passed to object_reduce_dimensions
+#' @param ... extra args passed to sce_reduce_dimensions
 #'
 #' @return an integrated SingleCellExperiment object
-object_integrate <- function(object_list, organism = "human", ...) {
+integrate <- function(sce_list, organism = "human", ...) {
     # drop 'colData' fields with same name as 'batchCorrect' output
-    object_list <- map(object_list, ~ {
+    sce_list <- map(sce_list, ~ {
         colData(.x)[["batch"]] <- NULL
         return(.x)
     })
 
-    geneCorrected <- correctExperiments(object_list)
+    geneCorrected <- correctExperiments(sce_list)
     mainExpName(geneCorrected) <- "integrated"
 
-    geneMerged <- correctExperiments(object_list)
+    geneMerged <- correctExperiments(sce_list)
     altExp(geneCorrected, "gene") <- geneMerged
 
-    alt_exp_names <- map(object_list, altExpNames)
+    alt_exp_names <- map(sce_list, altExpNames)
 
     if (all(map_lgl(alt_exp_names, ~ {
         length(.x) > 0 & "transcript" %in% .x
     }))) {
         # drop 'colData' fields with same name as 'batchCorrect' output
-        object_list <- map(object_list, ~ {
+        sce_list <- map(sce_list, ~ {
             colData(.x)[["batch"]] <- NULL
             return(.x)
         })
 
-        transcriptBatches <- map(object_list, swapAltExp, "transcript")
+        transcriptBatches <- map(sce_list, swapAltExp, "transcript")
         transcriptMerged <- correctExperiments(transcriptBatches, 
                                                PARAM = NoCorrectParam())
         altExp(geneCorrected, "transcript") <- transcriptMerged
@@ -104,14 +104,14 @@ object_integrate <- function(object_list, organism = "human", ...) {
 #' @param object A SingleCellExperiment objects
 #' @param suffix to be appended to file saved in output dir
 #' @param reduction to use default is pca
-#' @param ... extra args passed to object_integration_pipeline
+#' @param ... extra args passed to sce_integrate
 #' @export
 #'
 #' @return a SingleCellExperiment object
-reintegrate_object <- function(object, suffix = "", reduction = "PCA", ...) {
+reintegrate_sce <- function(object, suffix = "", reduction = "PCA", ...) {
     organism <- metadata(object)$experiment$organism
     experiment_name <- metadata(object)$experiment$experiment_name
     objects <- splitByCol(object, "batch")
-    object <- object_integration_pipeline(objects, suffix = suffix, ...)
+    object <- sce_integrate(objects, suffix = suffix, ...)
     object <- record_experiment_data(object, experiment_name, organism)
 }

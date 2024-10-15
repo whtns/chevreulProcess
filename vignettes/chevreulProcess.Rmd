@@ -43,11 +43,13 @@ knitr::opts_chunk$set(
 ## Install `chevreulProcess`
 
 `R` is an open-source statistical environment which can be easily modified 
-to enhance its functionality via packages. `r Biocpkg("chevreulProcess")` is a `R` 
-package available via the [Bioconductor](http://bioconductor.org) repository 
+to enhance its functionality via packages. `r Biocpkg("chevreulProcess")` 
+is a `R` package available via the [Bioconductor](http://bioconductor.org) 
+repository 
 for packages. `R` can be installed on any operating system from 
 [CRAN](https://cran.r-project.org/) after which you can install 
-`r Biocpkg("chevreulProcess")` by using the following commands in your `R` session:
+`r Biocpkg("chevreulProcess")` by using the following commands in your `R` 
+session:
 
 ```{r "install", eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
@@ -60,12 +62,12 @@ BiocManager::install("chevreulProcess")
 
 ## Required knowledge
 
-The `r Biocpkg("chevreulProcess")` package is designed for single-cell RNA sequencing
- data. The functions included within this package are derived from other 
- packages that have implemented the infrastructure needed for RNA-seq data
-  processing and analysis. Packages that have been instrumental in the 
-  development of `r Biocpkg("chevreulProcess")` include, 
-  `Biocpkg("SummarizedExperiment")` and `Biocpkg("scater")`.
+The `r Biocpkg("chevreulProcess")` package is designed for single-cell RNA 
+sequencing data. The functions included within this package are derived from 
+other packages that have implemented the infrastructure needed for RNA-seq data 
+processing and analysis. Packages that have been instrumental in the 
+development of `r Biocpkg("chevreulProcess")` include, 
+`Biocpkg("SummarizedExperiment")` and `Biocpkg("scater")`.
 
 ## Asking for help
 
@@ -77,8 +79,9 @@ resource for getting help: remember to use the `chevreulProcess` tag and check
 
 # Quick start to using `chevreulProcess`
 
-The `chevreulProcess` package contains functions to preprocess, cluster, visualize, and 
-perform other analyses on scRNA-seq data. It also contains a shiny app for easy 
+The `chevreulProcess` package contains functions to preprocess, cluster, 
+visualize, and perform other analyses on scRNA-seq data. It also contains a 
+shiny app for easy 
 visualization and analysis of scRNA data.
 
 `chvereul` uses SingelCellExperiment (SCE) object type 

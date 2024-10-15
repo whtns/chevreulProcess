@@ -31,6 +31,7 @@ Marker Genes will be stored in object metadata as \code{markers}
 }
 \examples{
 data("small_example_dataset")
-small_example_dataset <- find_all_markers(small_example_dataset, "gene_snn_res.1")
+small_example_dataset <- 
+find_all_markers(small_example_dataset, "gene_snn_res.1")
 stash_marker_features(small_example_dataset, "gene_snn_res.1")
 }

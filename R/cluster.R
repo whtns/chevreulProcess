@@ -12,13 +12,13 @@
 #' @export
 #' @examples 
 #' data("tiny_sce")
-#' run_object_de(tiny_sce, 
+#' sce_de(tiny_sce, 
 #' colnames(tiny_sce)[1:100], 
 #' colnames(tiny_sce)[101:200], 
 #' diffex_scheme = "custom")
 #'
 #' @return a dataframe with differential expression information
-run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
+sce_de <- function(object, cluster1, cluster2, resolution = 0.2,
                           diffex_scheme = "louvain", featureType = "gene",
                           tests = c("t", "wilcox", "bimod")) {
 
@@ -101,9 +101,10 @@ run_object_de <- function(object, cluster1, cluster2, resolution = 0.2,
 #' @export
 #' @examples
 #' data("small_example_dataset")
-#' object_preprocess(small_example_dataset)
+#' sce_preprocess(small_example_dataset)
 #'
-object_preprocess <- function(object, scale = TRUE, normalize = TRUE, 
+sce_preprocess <- 
+    function(object, scale = TRUE, normalize = TRUE, 
                               features = NULL, legacy_settings = FALSE, ...) {
     clusters <- quickCluster(object)
     object <- computeSumFactors(object, clusters = clusters)
@@ -138,8 +139,8 @@ find_all_markers <- function(object,
         #                                meta_cols)]
         cluster_index <- grepl(paste0(experiment, "_snn_res."), meta_cols)
         if (!any(cluster_index)) {
-            warning("no clusters found in metadata. runnings object_cluster")
-            object <- object_cluster(object, 
+            warning("no clusters found in metadata. runnings sce_cluster")
+            object <- sce_cluster(object, 
                                      resolution = seq(0.2, 1, by = 0.2))
         }
         clusters <- get_colData(object)[, cluster_index]
@@ -171,7 +172,8 @@ find_all_markers <- function(object,
 #' @export
 #' @examples
 #' data("small_example_dataset")
-#' small_example_dataset <- find_all_markers(small_example_dataset, "gene_snn_res.1")
+#' small_example_dataset <- 
+#' find_all_markers(small_example_dataset, "gene_snn_res.1")
 #' stash_marker_features(small_example_dataset, "gene_snn_res.1")
 stash_marker_features <- function(object, group_by, experiment = "gene", 
                                   top_n = 200, p_val_cutoff = 0.5) {
@@ -201,10 +203,13 @@ stash_marker_features <- function(object, group_by, experiment = "gene",
 #' @param reduction Set dimensional reduction object
 #' @param algorithm 1
 #' @param ... extra args passed to single cell packages
-#' @export
-#'
 #' @return a SingleCellExperiment object with louvain clusters
-object_cluster <- function(object = object, resolution = 0.6, 
+#' @export
+#' @examples
+#' data(small_example_dataset)
+#' sce_cluster(small_example_dataset)
+#' 
+sce_cluster <- function(object = object, resolution = 0.6, 
                            custom_clust = NULL, reduction = "PCA", 
                            algorithm = 1, ...) {
     message(glue("[{format(Sys.time(), '%H:%M:%S')}] Clustering Cells..."))
@@ -214,9 +219,9 @@ object_cluster <- function(object = object, resolution = 0.6,
             cluster_labels <- 
                 clusterCells(object,
                              use.dimred = reduction,
-                             BLUSPARAM = NNGraphParam(cluster.fun = "louvain", 
-                                                      cluster.args = 
-                                                          list(resolution = i))
+                             BLUSPARAM = NNGraphParam(
+                                 cluster.fun = "louvain", 
+                                 cluster.args = list(resolution = i))
             )
             colData(object)[[glue("gene_snn_res.{i}")]] <- cluster_labels
         }

@@ -8,7 +8,7 @@
 #'
 #' @return transcripts constituting a 
 #' gene of interest in a SingleCellExperiment object
-get_transcripts_from_object <- function(object, gene, organism = "human") {
+get_transcripts_from_sce <- function(object, gene, organism = "human") {
     transcripts <- genes_to_transcripts(gene, organism)
 
     transcripts <- transcripts[transcripts %in% get_features(object, 
@@ -93,8 +93,8 @@ record_experiment_data <- function(object,
 #' @examples
 #' 
 #' data(small_example_dataset)
-#' object_calcn(small_example_dataset)
-object_calcn <- function(object) {
+#' sce_calcn(small_example_dataset)
+sce_calcn <- function(object) {
     object <- addPerCellQC(object)
     main_exp_name <- mainExpName(object) %||% "main"
     object[[glue("nFeature_{main_exp_name}")]] <- object$detected
@@ -320,28 +320,8 @@ metadata_from_batch <- function(
         identity()
 }
 
-#' Clean Vector of Chevreul Names
-#'
-#' Cleans names of objects provided in a vector form
-#'
-#' @param myvec A vector of object names
-#'
-#' @return a clean vector of object names
-#' @export
-#' @examples
-#' 
-#' data(small_example_dataset)
-#' make_chevreul_clean_names(colnames(
-#' get_colData(small_example_dataset)))
-make_chevreul_clean_names <- function(myvec) {
-    names(myvec) <- 
-        myvec |> 
-        str_replace_all("[^[:alnum:][:space:]\\.]", " ") |> 
-        str_to_title()
-}
 
-
-#' Save object to <project>/output/sce/<feature>_object.rds
+#' Save object to <project>/output/sce/<feature>_sce.rds
 #'
 #' @param object a SingleCellExperiment object
 #' @param prefix a prefix for saving
@@ -351,15 +331,15 @@ make_chevreul_clean_names <- function(myvec) {
 #'
 #'
 #'
-save_object <- function(object, prefix = "unfiltered", proj_dir = getwd()) {
-    object_dir <- path(proj_dir, "output", "singlecellexperiment")
+save_sce <- function(object, prefix = "unfiltered", proj_dir = getwd()) {
+    sce_dir <- path(proj_dir, "output", "singlecellexperiment")
 
-    dir.create(object_dir)
+    dir.create(sce_dir)
 
-    object_path <- path(object_dir, paste0(prefix, "_sce.rds"))
+    sce_path <- path(sce_dir, paste0(prefix, "_sce.rds"))
 
-    message(glue("saving to {object_path}"))
-    saveRDS(object, object_path)
+    message(glue("saving to {sce_path}"))
+    saveRDS(object, sce_path)
 
     return(object)
 }

@@ -1,55 +1,3 @@
-#' Collate list of variables to be plotted
-#'
-#' @param object a SingleCellExperiment object
-#'
-#' @return plot_types a list of category_vars or continuous_vars
-#' @export
-#' @examples
-#' 
-#' data(small_example_dataset)
-#' list_plot_types(small_example_dataset)
-list_plot_types <- function(object) {
-    meta_types <- tibble(
-        vars = colnames(colData(object)),
-        var_type = map_chr(colData(object), class),
-        num_levels = unlist(map(colData(object), ~ length(unique(.x))))
-    )
-
-    meta_types <- meta_types |>
-        filter(!grepl("_snn_res", vars)) |>
-        mutate(meta_type = case_when(
-            var_type %in% c("integer", "numeric") ~ "continuous",
-            var_type %in% c("character", "factor", "logical") ~ "category"
-        )) |>
-        mutate(meta_type = ifelse(meta_type == "continuous" & num_levels < 30, "category", meta_type)) |>
-        filter(num_levels > 1) |>
-        identity()
-
-    continuous_vars <- meta_types |>
-        filter(meta_type == "continuous") |>
-        pull(vars)
-
-    continuous_vars <- c("feature", continuous_vars)
-    
-    names(continuous_vars) <- 
-        str_to_title(str_replace_all(continuous_vars, "[[:punct:]]", " "))
-
-    category_vars <- meta_types |>
-        filter(meta_type == "category") |>
-        pull(vars)
-    
-    names(category_vars) <-  
-        str_to_title(str_replace_all(
-            category_vars, 
-            "[^[:alnum:][:space:]\\.]", " "))
-
-    plot_types <- list(category_vars = category_vars, continuous_vars = continuous_vars)
-
-
-
-    return(plot_types)
-}
-
 #' Get cell metadata from a given object
 #' 
 #' Get cell metadata
@@ -97,8 +45,8 @@ set_colData <- function(object, meta) {
 #' @examples
 #' 
 #' data(small_example_dataset)
-#' get_object_metadata(small_example_dataset)
-get_object_metadata <- function(object) {
+#' get_sce_metadata(small_example_dataset)
+get_sce_metadata <- function(object) {
     metadata(object)
 }
 
@@ -198,9 +146,12 @@ retrieve_experiment <- function(object, experiment) {
 #'
 #' @param object a SingleCellExperiment object
 #' @param experiment an experiment name
-#' @export
 #'
 #' @return logical scalar indicating if experiment is present in object
+#' @export
+#' @examples 
+#' data(small_example_dataset)
+#' query_experiment(small_example_dataset, "gene")
 query_experiment <- function(object, experiment) {
     return(experiment %in% c(mainExpName(object), altExpNames(object)))
 }
