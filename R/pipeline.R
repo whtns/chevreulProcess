@@ -16,7 +16,6 @@
 #' whether to annotate mitochondrial percentage
 #'
 #' @return an integrated SingleCellExperiment object
-#' @export
 sce_integrate <- function(sce_list, resolution = seq(0.2, 2.0, by = 0.2), suffix = "", organism = "human", annotate_cell_cycle = FALSE, annotate_percent_mito = FALSE, reduction = "PCA", ...) {
     experiment_names <- names(sce_list)
 

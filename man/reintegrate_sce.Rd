@@ -13,7 +13,7 @@ reintegrate_sce(object, suffix = "", reduction = "PCA", ...)
 
 \item{reduction}{to use default is pca}
 
-\item{...}{extra args passed to sce_integrate}
+\item{...}{extra args passed to sce_integration_pipeline}
 }
 \value{
 a SingleCellExperiment object
