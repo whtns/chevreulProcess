@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{save_sce}
 \alias{save_sce}
-\title{Save object to \if{html}{\out{<project>}}/output/sce/\if{html}{\out{<feature>}}_sce.rds}
+\title{Save object with alabaster}
 \usage{
 save_sce(object, prefix = "unfiltered", proj_dir = getwd())
 }
@@ -14,8 +14,9 @@ save_sce(object, prefix = "unfiltered", proj_dir = getwd())
 \item{proj_dir}{path to a project directory}
 }
 \value{
-a path to an rds file containing a SingleCellExperiment object
+a path to SingleCellExperiment object saved
+under the alabaster framework
 }
 \description{
-Save object to \if{html}{\out{<project>}}/output/sce/\if{html}{\out{<feature>}}_sce.rds
+Save object with alabaster
 }

@@ -71,10 +71,10 @@ record_experiment_data <- function(object,
     )
 
     if (!is.null(objectVersion(object))) {
-        experiment$SingleCellExperiment_version <- objectVersion(object)
+        experiment$SingleCellExperiment_version <- as.character(objectVersion(object))
     }
 
-    experiment$chevreul_version <- packageVersion("chevreul")
+    experiment$chevreul_version <- as.character(packageVersion("chevreul"))
 
     metadata(object)[["experiment"]] <- experiment
 
@@ -321,13 +321,14 @@ metadata_from_batch <- function(
 }
 
 
-#' Save object to <project>/output/sce/<feature>_sce.rds
+#' Save object with alabaster
 #'
 #' @param object a SingleCellExperiment object
 #' @param prefix a prefix for saving
 #' @param proj_dir path to a project directory
 #'
-#' @return a path to an rds file containing a SingleCellExperiment object
+#' @return a path to SingleCellExperiment object saved 
+#' under the alabaster framework
 #'
 #'
 #'
@@ -336,10 +337,11 @@ save_sce <- function(object, prefix = "unfiltered", proj_dir = getwd()) {
 
     dir.create(sce_dir)
 
-    sce_path <- path(sce_dir, paste0(prefix, "_sce.rds"))
+    alabaster_path <- path(sce_dir, paste0(prefix, "_alabaster"))
 
-    message(glue("saving to {sce_path}"))
-    saveRDS(object, sce_path)
-
+    message(glue("saving to {alabaster_path}"))
+    
+    saveObject(chevreul_sce, alabaster_path)
+    
     return(object)
 }

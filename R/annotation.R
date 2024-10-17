@@ -14,17 +14,12 @@
 #' genes_to_transcripts("NRL")
 genes_to_transcripts <- function(symbols, organism = "human") {
 
-    if (organism == "human") {
-        feature_table <- transcripts(EnsDb.Hsapiens.v86,
+ensdb <- switch(organism, human = EnsDb.Hsapiens.v86, mouse = EnsDb.Mmusculus.v79)
+
+    feature_table <- transcripts(ensdb,
             columns = c("gene_name", "gene_biotype", "gene_id"),
             return.type = "DataFrame"
         )
-    } else if (organism == "mouse") {
-        feature_table <- transcripts(EnsDb.Mmusculus.v79,
-            columns = c("gene_name", "gene_biotype", "gene_id"),
-            return.type = "DataFrame"
-        )
-    }
 
     feature_table[(feature_table[["gene_name"]] %in% symbols), "tx_id"]
 }
@@ -55,14 +50,12 @@ transcripts_to_genes <- function(transcripts, organism = "human") {
     data("grch38_tx2gene", envir = data_env, package = "chevreul")
     grch38 <- data_env[["grch38"]]
     grch38_tx2gene <- data_env[["grch38_tx2gene"]]
-    
-    if (organism == "human") {
-        gene_table <- grch38
-        transcript_table <- grch38_tx2gene
-    } else if (organism == "mouse") {
-        gene_table <- grcm38
-        transcript_table <- grcm38_tx2gene
-    }
+
+    gene_table <- switch(organism, human = grch38, mouse = grcm38)
+
+    transcript_table = switch(organism, 
+    human = grch38_tx2gene, 
+    mouse = grcm38_tx2gene)
 
     tibble(enstxp = transcripts) |>
         left_join(transcript_table, by = "enstxp") |>

@@ -27,7 +27,7 @@ via \code{scran::findMarkers}}
 
 \item{organism}{either "human" or "mouse"}
 
-\item{...}{extra args passed to sce_integration_pipeline}
+\item{...}{extra args passed to sce_integrate}
 }
 \value{
 an integrated SingleCellExperiment object
